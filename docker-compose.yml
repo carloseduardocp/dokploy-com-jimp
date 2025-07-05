@@ -1,31 +1,27 @@
-version: "3.8"
+version: '3.8'
+
 services:
   n8n:
+    # 'build: .' diz para o Docker construir a imagem usando o Dockerfile na mesma pasta
     build: .
     restart: always
+    ports:
+      # A porta que o Dokploy irá expor. Geralmente 5678 para o n8n.
+      - "5678:5678"
     environment:
-      - N8N_HOST=${N8N_HOST}
-      - N8N_PORT=${N8N_PORT}
-      - N8N_PROTOCOL=http
-      - NODE_ENV=production
-      - WEBHOOK_URL=https://${N8N_HOST}/
-      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
-      - N8N_SECURE_COOKIE=false
+      # Adicione esta variável para permitir que o n8n use o jimp
       - NODE_FUNCTION_ALLOW_EXTERNAL=jimp
-      - N8N_EXECUTIONS_PROCESS=main
+      # O Dokploy irá injetar as outras variáveis (HOST, PROTOCOL, etc) automaticamente.
+      # Você pode adicionar outras que precisar, como o fuso horário:
+      - GENERIC_TIMEZONE=America/Sao_Paulo
     volumes:
+      # Mapeia o volume nomeado 'n8n_data' para a pasta de dados do n8n
+      # Isso vai persistir seus workflows E a pasta 'custom' que criamos no Dockerfile
       - n8n_data:/home/node/.n8n
-    # A CORREÇÃO: Comando escrito em formato de array (exec form)
-    command:
-      - "sh"
-      - "-c"
-      - |
-        if [ ! -d "/home/node/.n8n/custom/node_modules/jimp" ]; then
-          echo 'Copiando jimp para a pasta custom...';
-          mkdir -p /home/node/.n8n/custom;
-          cp -rT /jimp-install/node_modules /home/node/.n8n/custom/node_modules;
-          chown -R node:node /home/node/.n8n/custom;
-        fi;
-        exec /docker-entrypoint.sh n8n
+
+# --- A CORREÇÃO PRINCIPAL ESTÁ AQUI ---
+# Define o volume nomeado 'n8n_data'.
+# Note que NÃO HÁ HÍFEN aqui e a indentação está no nível raiz.
 volumes:
-      - n8n_data:/home/node/.n8n
+  n8n_data:
+    # Deixar em branco é o correto, usa o driver padrão do Docker.
