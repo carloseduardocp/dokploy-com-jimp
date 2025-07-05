@@ -15,7 +15,17 @@ services:
       - N8N_EXECUTIONS_PROCESS=main
     volumes:
       - n8n_data:/home/node/.n8n
-    # Comando com sintaxe alternativa para garantir a execução
-    command: sh -c "if [ ! -d \"/home/node/.n8n/custom/node_modules/jimp\" ]; then mkdir -p /home/node/.n8n/custom; cp -rT /jimp-install/node_modules /home/node/.n8n/custom/node_modules; chown -R node:node /home/node/.n8n/custom; fi; /docker-entrypoint.sh n8n"
+    # A CORREÇÃO: Comando escrito em formato de array (exec form)
+    command:
+      - "sh"
+      - "-c"
+      - |
+        if [ ! -d "/home/node/.n8n/custom/node_modules/jimp" ]; then
+          echo 'Copiando jimp para a pasta custom...';
+          mkdir -p /home/node/.n8n/custom;
+          cp -rT /jimp-install/node_modules /home/node/.n8n/custom/node_modules;
+          chown -R node:node /home/node/.n8n/custom;
+        fi;
+        exec /docker-entrypoint.sh n8n
 volumes:
   n8n_data:
