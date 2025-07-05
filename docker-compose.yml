@@ -28,4 +28,4 @@ services:
         fi;
         exec /docker-entrypoint.sh n8n
 volumes:
-  n8n_data:
+      - n8n_data:/home/node/.n8n
