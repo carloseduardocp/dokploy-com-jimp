@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  n8n:
+    build: .
+    restart: always
+    environment:
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=${N8N_PORT}
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://${N8N_HOST}/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - N8N_SECURE_COOKIE=false
+      - NODE_FUNCTION_ALLOW_EXTERNAL=jimp
+      - N8N_EXECUTIONS_PROCESS=main
+    volumes:
+      - n8n_data:/home/node/.n8n
+volumes:
+  n8n_data:
