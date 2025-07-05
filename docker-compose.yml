@@ -14,21 +14,19 @@ services:
       - NODE_FUNCTION_ALLOW_EXTERNAL=jimp
       - N8N_EXECUTIONS_PROCESS=main
     volumes:
-      # O volume de dados continua o mesmo
       - n8n_data:/home/node/.n8n
-    # A MÁGICA: Este comando roda toda vez que o container inicia
+    # Comando corrigido
     command: >
       sh -c "
-        # 1. Verifica se o jimp já foi copiado para a pasta custom
+        # 1. Copia o jimp para a pasta custom (se necessário)
         if [ ! -d \"/home/node/.n8n/custom/node_modules/jimp\" ]; then
           echo 'Copiando jimp para a pasta custom...';
-          # 2. Cria a pasta e copia o jimp do local seguro para dentro do volume
           mkdir -p /home/node/.n8n/custom;
           cp -rT /jimp-install/node_modules /home/node/.n8n/custom/node_modules;
           chown -R node:node /home/node/.n8n/custom;
         fi;
-        # 3. Inicia o n8n normalmente
-        n8n start
+        # 2. A CORREÇÃO: Executa o script de inicialização original do n8n
+        exec /docker-entrypoint.sh n8n
       "
 volumes:
   n8n_data:
